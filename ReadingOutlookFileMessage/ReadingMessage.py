@@ -8,6 +8,7 @@ import os
 from pathlib import PurePath
 
 # Launch window to select file.
+#filename = PurePath(askopenfilename())
 filename = PurePath(askopenfilename())
 
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
