@@ -76,7 +76,7 @@ def FindElementOnHelp(msg):
     msg -- The email message file with its formatted content.
     """
     element = driver.find_element_by_name(SiteInfo["h_user"])
-    element.send_keys("sorellano")
+    element.send_keys("user")
     element.send_keys(Keys.TAB)
     element = driver.find_element_by_id(SiteInfo["h_tittle"])                   # The title of the ticket is written.
     element.send_keys(msg.Subject)
