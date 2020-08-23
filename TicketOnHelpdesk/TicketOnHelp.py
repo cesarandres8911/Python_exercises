@@ -1,5 +1,6 @@
 # https://www.selenium.dev/documentation/es/webdriver/browser_manipulation/
 # https://selenium-python.readthedocs.io/installation.html
+# https://docs.hektorprofe.net/python/funcionalidades-avanzadas/expresiones-regulares/
 from tkinter.constants import FALSE
 import win32com.client                                                          # import library to manipulate .msg files
 import tkinter                                                                  # Graphic library for interface
@@ -12,8 +13,9 @@ from selenium.webdriver.chrome.options import Options                           
 from selenium.webdriver import ActionChains                                     # Method for manipulate clic or action on button.
 import time                                                                     # Add a few seconds before writing the ticket subcategory.
 from configparser import ConfigParser                                           # Manipulate the local system variables
-ConfigFile = ConfigParser()
+import re
 
+ConfigFile = ConfigParser()
 ConfigFile.read("config.ini")
 UserInfo = ConfigFile["USERINFO"]
 SiteInfo = ConfigFile["HELP"]
@@ -21,21 +23,27 @@ filename = askopenfilenames(title = "Select outlook message file")              
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")  # Object for manipulate outlook files
 filedriver = UserInfo["chromedriverpath"]                                       # Path for chromedriver file to run browser.
 options = Options()                                                             # Create option object for modify argument to chrome driver 
-options.add_argument("--start-maximized")                                       # code for maximized windows to start chrome driver
-driver=webdriver.Chrome(options=options, executable_path=filedriver)            # Initialize the chrome browser and maximize windows.
+options.add_argument("--start-maximized")                                       # Maximized windows to start chrome driver
+driver=webdriver.Chrome(options=options, executable_path=filedriver)            # Initialize the chrome browser 
 
-def IsRetiredUser(msg):
-    """ Check if it is a user withdrawal email
+def IsRetiredUser(pos):
+    """ Check if it is a user retired email
 
-    Search the message title for the words associated with a user withdrawal email.
+    Search the message title for the words associated with a user retired email.
 
     Parameters
 
-    msg -- The email message file with its formatted content.
+    pos -- email message position in the tuple class
     """
-    return False
+    msg = outlook.OpenSharedItem(PurePath(filename[pos])) 
+    FindText = "informacion de retiro" + "|" + "información de retiro" + "|" + "notificación retiro de personal"
+    isRetired = re.findall(FindText, msg.Subject.lower())
+    if isRetired:
+        return True
+    else:
+        return False
 
-def BrowserTabs(pos):
+def BrowserTabs():
     """ Create New Tabs on browser.
 
     This function generates a new tab in the browser for each attached mail file and place the focus on it.
@@ -45,7 +53,7 @@ def BrowserTabs(pos):
     pos -- The number of .msg files.
     """
     driver.execute_script("window.open()")
-    driver.switch_to.window(driver.window_handles[pos+1])
+    driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])
 
 def CreateTicket(pos):
     """ Create Ticket on Help application.
@@ -76,7 +84,7 @@ def FindElementOnHelp(msg):
     msg -- The email message file with its formatted content.
     """
     element = driver.find_element_by_name(SiteInfo["h_user"])
-    element.send_keys("user")
+    element.send_keys("mplata")
     element.send_keys(Keys.TAB)
     element = driver.find_element_by_id(SiteInfo["h_tittle"])                   # The title of the ticket is written.
     element.send_keys(msg.Subject)
@@ -100,7 +108,7 @@ def SelectElementOnHelp(msg):
     select_element = Select(driver.find_element_by_id(SiteInfo["h_contact"]))   # The user's contact mode is selected (default is Email).
     select_element.select_by_visible_text("Email")
     select_element = Select(driver.find_element_by_id(SiteInfo["h_ubication"])) # The user's location is selected.
-    select_element.select_by_visible_text("BAQ")
+    select_element.select_by_visible_text("CDJ")
     select_element = Select(driver.find_element_by_id(SiteInfo["h_department"])) # The area or department of the user is selected.
     select_element.select_by_visible_text("GESTION HUMANA") 
 
@@ -117,18 +125,23 @@ def AttachmentOnHelp(msg, pos):
     """
     button = driver.find_element_by_xpath(SiteInfo["h_idbutton"])               # find the "Adjuntar" button
     ActionChains(driver).click(button).perform()
-    driver.switch_to.window(driver.window_handles[pos+1])                       # Manipulate the new windows for attachment message file
+    driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])  # Manipulate the new windows for attachment message file
     element = driver.find_element_by_xpath(SiteInfo["h_idfile"])
     element.send_keys(filename[pos])                                            # The file path is written to attach the email to the ticket.
     button = driver.find_element_by_xpath(SiteInfo["h_idsend"])
     ActionChains(driver).click(button).perform()
     driver.switch_to.alert.accept()
-    driver.switch_to.window(driver.window_handles[pos])
+    driver.switch_to.window(driver.window_handles[len(driver.window_handles)-1])
 
 for file in range(len(filename)):
-    if IsRetiredUser == True:
-        pass
+    if IsRetiredUser(file):
+        for i in range(7):
+            CreateTicket(file)
+            if (i+1) < 7:
+                BrowserTabs()
+        if (file + 1) <= len(filename):
+            BrowserTabs()
     else:
         CreateTicket(file)
-    if (file + 1) < len(filename):
-        BrowserTabs(file)
+        if (file + 1) < len(filename):
+            BrowserTabs()
