@@ -8,9 +8,10 @@ filename = r"C:\Recursos\Programacion\Python\Browser\chromedriver.exe"
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
-c_option = Options() 
-c_option.add_argument("--start-maximized") 
-driver=webdriver.Chrome(ptions=c_option, executable_path=filename) 
+#c_option = Options() 
+#c_option.add_argument("--start-maximized") 
+#driver=webdriver.Chrome(Options=c_option, executable_path=filename)
+driver=webdriver.Chrome(executable_path=filename) 
 
 user_name = "cmeneses"
 tittle = "This is my test"
@@ -53,7 +54,7 @@ driver.switch_to.window(driver.window_handles[1])
 print ("Este es el cuadro de dialogo " + driver.current_window_handle)
 
 element = driver.find_element_by_xpath("//*[@id='file']")
-element.send_keys("C:\\test\\GH+.msg")
+element.send_keys("C:\\temp\\test\\GH+.msg")
 
 button = driver.find_element_by_xpath("//*[@id='enviar']")
 ActionChains(driver).click(button).perform()

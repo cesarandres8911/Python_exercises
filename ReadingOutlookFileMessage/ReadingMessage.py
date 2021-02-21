@@ -19,10 +19,14 @@ print (msg.SenderEmailAddress)
 print (msg.SentOn)
 print (msg.Subject)
 print (msg.Body)
+msg.Subject = "esta es una prueba " + msg.Subject
+print (msg.Subject)
+msg.Subject = "esta es la segunda una prueba " + msg.Subject
+print (msg.Subject)
 
-count_attachments = msg.Attachments.Count
-if count_attachments > 0:
-    for item in range(count_attachments):
-        print (msg.Attachments.Item(item + 1).Filename)
+#count_attachments = msg.Attachments.Count
+#if count_attachments > 0:
+#    for item in range(count_attachments):
+#        print (msg.Attachments.Item(item + 1).Filename)
 
 #del outlook, msg
