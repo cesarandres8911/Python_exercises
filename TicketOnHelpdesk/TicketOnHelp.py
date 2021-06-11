@@ -92,7 +92,7 @@ def FindElementOnHelp(msg):
     msg -- The email message file with its formatted content.
     """
     element = driver.find_element_by_name(SiteInfo["h_user"])
-    element.send_keys("dconstante")
+    element.send_keys("mplata")
     element.send_keys(Keys.TAB)
     element = driver.find_element_by_id(SiteInfo["h_tittle"])                   # The title of the ticket is written.
     element.send_keys(msg.Subject)
@@ -117,7 +117,7 @@ def SelectElementOnHelp(msg):
     select_element = Select(driver.find_element_by_id(SiteInfo["h_contact"]))   # The user's contact mode is selected (default is Email).
     select_element.select_by_visible_text("Email")
     select_element = Select(driver.find_element_by_id(SiteInfo["h_ubication"])) # The user's location is selected.
-    select_element.select_by_visible_text("NPTO")
+    select_element.select_by_visible_text("CDJ")
     select_element = Select(driver.find_element_by_id(SiteInfo["h_department"])) # The area or department of the user is selected.
     select_element.select_by_visible_text("GESTION HUMANA") 
     time.sleep(2)                                                               # This field takes time to load the information, 2 seconds of waiting are added before writing the subcategory.
@@ -150,29 +150,29 @@ for file in range(len(filename)):
     msg = outlook.OpenSharedItem(PurePath(filename[file]))                       # Contains the content of the email (title, body, etc.)
     subject = msg.Subject
     if IsRetiredUser(msg):
-        for i in range(8):
+        for i in range(4):
             if (i == 0):
-                msg.Subject = "Dominio - " + subject
+                msg.Subject = "Dominio, caja menor, MDM, Pin de impresión - " + subject
             elif (i == 1):
-                msg.Subject = "SAP - " + subject
+                msg.Subject = "Activos Fijos, Celular - " + subject
             elif (i == 2):
-                msg.Subject = "No SAP - " + subject
+                msg.Subject = "Aplicaciones SAP y No SAP - " + subject
             elif (i == 3):
-                msg.Subject = "Docuware - " + subject
-            elif (i == 4):
+                msg.Subject = "Licencia Teams, Prominer, Línea celular - " + subject
+            """elif (i == 4):
                 msg.Subject = "Pin de impresión - " + subject
             elif (i == 5):
                 msg.Subject = "Activos Fijos - " + subject
             elif (i == 6):
                 msg.Subject = "Línea Celular - " + subject
             elif (i == 7):
-                msg.Subject = "Licencia Prominer - " + subject
+                msg.Subject = "Licencia Prominer - " + subject"""
 
             # Remove all <https://hcm19.sapsf.com/ui/uicore/img/... text from message body on retired message from GH+
             msg.Body = remove_urls(msg.Body)
 
             CreateTicket(file, msg)
-            if (i+1) < 8:
+            if (i+1) < 4:
                 BrowserTabs()
 
         if (file + 1) < len(filename):
